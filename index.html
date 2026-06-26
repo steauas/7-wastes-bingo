@@ -382,7 +382,7 @@ const OF=[
 
 const CLOUD_URL = "https://script.google.com/macros/s/AKfycbx08ylSiH_y6gb1pmrMvwHfsMmssvL9HLiJTmYLxDGQp1ypiGjQBs6-M2mpDZF7wCMi/exec";
 
-let pn='',empId='',board=[],cards=[],mc=0,wc=0,bl=0,tmrI=null,tl=3,gst=null,ended=false,dlines=new Set(),dcid=null;
+let pn='',empId='',board=[],cards=[],mc=0,wc=0,bl=0,tmrI=null,tl=5,gst=null,ended=false,dlines=new Set(),dcid=null;
 
 function shuf(a){let b=[...a];for(let i=b.length-1;i>0;i--){let j=Math.floor(Math.random()*(i+1));[b[i],b[j]]=[b[j],b[i]]}return b}
 function showS(id){document.querySelectorAll('.screen').forEach(s=>s.classList.remove('active'));document.getElementById(id).classList.add('active')}
@@ -457,7 +457,7 @@ pn = document.getElementById('pName').value.trim();
 }
 
 function initG(){
-  mc=0;wc=0;bl=0;tl=3;ended=false;dlines=new Set();gst=Date.now();
+  mc=0;wc=0;bl=0;tl=5;ended=false;dlines=new Set();gst=Date.now();
   document.getElementById('gPN').textContent=pn+' ('+empId+')';
   updSt();
   let tp=[];WT.forEach(w=>{tp.push(w.id,w.id,w.id)});
