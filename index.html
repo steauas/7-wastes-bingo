@@ -305,7 +305,7 @@
   </div>
 </div>
 
-<div id="resultsScreen" class="screen"><div class="res-box"><div class="res-title">🏆 Game Results</div><div class="sc-circ"><div class="sn" id="fS">0</div><div class="sl">/24</div></div><div class="rg"><div class="ri"><div class="rl">Player</div><div class="rv" id="rV1">-</div></div><div class="ri"><div class="rl">Employee ID</div><div class="rv" id="rVE">-</div></div><div class="ri"><div class="rl">Time Used</div><div class="rv" id="rV2">-</div></div><div class="ri"><div class="rl">Bingo Lines</div><div class="rv gld" id="rV3">0</div></div><div class="ri"><div class="rl">Accuracy</div><div class="rv grn" id="rV4">0%</div></div><div class="ri"><div class="rl">Wrong Attempts</div><div class="rv red" id="rV5">0</div></div><div class="ri full"><div class="rl">Status</div><div class="rv" id="rV7">-</div></div></div><button class="go-btn" style="background:#4CAF50;color:#fff;margin-bottom:10px" onclick="submitToGitHub()">📤 Submit Score to Global Leaderboard</button><button class="go-btn" onclick="playAgain()">Play Again</button><button class="go-btn" style="background:#FFD700;color:#0D47A1;margin-top:10px" onclick="showLB()">🏆 Leaderboard</button></div></div>
+<div id="resultsScreen" class="screen"><div class="res-box"><div class="res-title">🏆 Game Results</div><div class="sc-circ"><div class="sn" id="fS">0</div><div class="sl">/24</div></div><div class="rg"><div class="ri"><div class="rl">Player</div><div class="rv" id="rV1">-</div></div><div class="ri"><div class="rl">Employee ID</div><div class="rv" id="rVE">-</div></div><div class="ri"><div class="rl">Time Used</div><div class="rv" id="rV2">-</div></div><div class="ri"><div class="rl">Bingo Lines</div><div class="rv gld" id="rV3">0</div></div><div class="ri"><div class="rl">Accuracy</div><div class="rv grn" id="rV4">0%</div></div><div class="ri"><div class="rl">Wrong Attempts</div><div class="rv red" id="rV5">0</div></div><div class="ri full"><div class="rl">Status</div><div class="rv" id="rV7">-</div></div></div><button class="go-btn" onclick="playAgain()">Play Again</button><button class="go-btn" style="background:#FFD700;color:#0D47A1;margin-top:10px" onclick="showLB()">🏆 Leaderboard</button></div></div>
 
 <div id="adminScreen" class="screen">
   <div class="ah"><div class="at">📊 Admin Panel</div>
@@ -380,6 +380,8 @@ const OF=[
 {t:'D',en:'Supplier requirements did not cascaded correctly.',s:'🏢'},
 ];
 
+const CLOUD_URL = "https://script.google.com/macros/s/AKfycbx08ylSiH_y6gb1pmrMvwHfsMmssvL9HLiJTmYLxDGQp1ypiGjQBs6-M2mpDZF7wCMi/exec%22";
+
 let pn='',empId='',board=[],cards=[],mc=0,wc=0,bl=0,tmrI=null,tl=3,gst=null,ended=false,dlines=new Set(),dcid=null;
 
 function shuf(a){let b=[...a];for(let i=b.length-1;i>0;i--){let j=Math.floor(Math.random()*(i+1));[b[i],b[j]]=[b[j],b[i]]}return b}
@@ -443,7 +445,9 @@ pn = document.getElementById('pName').value.trim();
   if (hasPlayedBefore(pn, empId)) {
     alert(
       'You have already played the 7 Wastes Bingo Challenge.\n\n' +
-      'Each employee is only allowed to play once.'
+      'Each employee is only allowed to play once.\n\n' +
+      'Stop MUDA your time and return to work now!\n\n' +
+      'Please look for Charles or Zhen Kiat if you think this is an error.'
     );
     return;
   }
@@ -580,16 +584,44 @@ function playAgain(){showS('loginScreen')}
 
 function confetti(){const d=document.createElement('div');d.className='confetti';document.body.appendChild(d);const colors=['#FFD700','#FF6B6B','#4CAF50','#3498DB','#E91E63','#FF9800','#9C27B0'];for(let i=0;i<80;i++){const s=document.createElement('span');s.style.cssText='left:'+Math.random()*100+'%;top:-10px;background:'+colors[Math.floor(Math.random()*7)]+';width:'+(6+Math.random()*8)+'px;height:'+(6+Math.random()*8)+'px;border-radius:'+(Math.random()>.5?'50%':'2px')+';animation-duration:'+(2+Math.random()*3)+'s;animation-delay:'+Math.random()*2+'s';d.appendChild(s)}setTimeout(()=>d.remove(),6000)}
 
-function saveToServer(rec){
-  var hdr='No.,Name,Employee ID,Date/Time,Source,Score,Bingo,Time,Wrong,Accuracy,Status';
-  var row='1,"'+rec.name+'","'+(rec.empId||'')+'","'+rec.date+'","'+rec.source+'",'+rec.score+','+rec.bingo+','+rec.time+','+rec.wrong+','+(rec.accuracy||'-')+',"'+rec.status+'"';
-  var csv='\uFEFF'+hdr+'\n'+row+'\n';
-  var blob=new Blob([csv],{type:'text/csv;charset=utf-8;'});
-  var a=document.createElement('a');a.href=URL.createObjectURL(blob);
-  var d=new Date();var ts=d.getFullYear()+String(d.getMonth()+1).padStart(2,'0')+String(d.getDate()).padStart(2,'0')+'_'+String(d.getHours()).padStart(2,'0')+String(d.getMinutes()).padStart(2,'0')+String(d.getSeconds()).padStart(2,'0');
-  a.download='Bingo_'+rec.name+'_'+ts+'.csv';a.click();
-  toast('📥 Record downloaded, save to shared folder','ok',3000)
+function saveToServer(rec) {
+
+  // We removed the localStorage backup here because endG() already does it!
+
+  // This stops the duplicate records.
+ 
+  // Send to Google Sheets using "no-cors" to bypass browser security blocks
+
+  fetch(CLOUD_URL, {
+
+    method: "POST",
+
+    mode: "no-cors", // <-- This is the magic bullet for Google Apps Script
+
+    headers: { "Content-Type": "text/plain" },
+
+    body: JSON.stringify(rec)
+
+  })
+
+  .then(() => {
+
+    // With no-cors, we can't read the response, but if it reaches here, it fired successfully
+
+    toast('✅ Score saved to cloud!', 'ok', 3000);
+
+  })
+
+  .catch(err => {
+
+    console.error('Cloud save error:', err);
+
+    toast('⚠️ Saved locally, cloud sync failed.', 'er', 3000);
+
+  });
+
 }
+ 
 
 var mergedRecs=[];
 function showAdmin(){fetchLocalRecords();renderPlayedUsers();}
@@ -709,56 +741,29 @@ function g(cols,idx){return idx>=0&&idx<cols.length?cols[idx]:''}
 function finishImport(imported){var existing=JSON.parse(localStorage.getItem('bingo_records')||'[]');var all=existing.concat(imported);var seen={},deduped=[];all.forEach(function(r){var key=(r.name||'')+'|'+(r.empId||'')+'|'+(r.date||'')+'|'+(r.score||'')+'|'+(r.time||'');if(!seen[key]){seen[key]=true;deduped.push(r)}});deduped.sort(function(a,b){return(b.date||'').localeCompare(a.date||'')});mergedRecs=deduped;localStorage.setItem('bingo_records',JSON.stringify(deduped));renderAdminTable(deduped);toast('✅ Records imported','ok',2500)}
 function initDropZone(){var zone=document.getElementById('aTW');if(!zone)return;zone.addEventListener('dragover',function(e){e.preventDefault();zone.classList.add('over')});zone.addEventListener('dragleave',function(e){e.preventDefault();zone.classList.remove('over')});zone.addEventListener('drop',function(e){e.preventDefault();zone.classList.remove('over');var files=e.dataTransfer.files;if(files&&files.length)handleFiles(files)})}
 
-
-function submitToGitHub() {
-  // Get the most recent game record from local storage
-  var recs = JSON.parse(localStorage.getItem('bingo_records') || '[]');
-  if (recs.length === 0) {
-    toast('No score found to submit.', 'er');
-    return;
-  }
-  var rec = recs[recs.length - 1];
-
-  var repoUrl = "https://github.com/esquie96/7-wastes-bingo";
-  var issueTitle = encodeURIComponent("Score Submission: " + rec.name);
-
-  // Format exactly matching CSV headers used by parseCSV()
-  var csvRow = '"' + rec.name + '","' + (rec.empId || '') + '","' + rec.date + '","' + rec.source + '",' + parseScoreNum(rec.score) + ',' + rec.bingo + ',"' + rec.time + '",' + rec.wrong + ',' + parseAccNum(rec.accuracy) + ',"' + rec.status + '"';
-
-  var issueBody = encodeURIComponent("DATA:" + csvRow);
-  var finalUrl = repoUrl + "/issues/new?title=" + issueTitle + "&body=" + issueBody;
-
-  toast('Opening GitHub to submit score...', 'ok', 3000);
-  window.open(finalUrl, '_blank');
-}
-
 var lbData=[],lbSort='overall';
 function showLB() {
+  // Show the screen immediately with a loading message
+  document.getElementById('lbTableWrap').innerHTML = '<div class="lb-empty">Loading leaderboard from cloud... ⏳</div>';
   showS('lbScreen');
-  var tabsDiv = document.getElementById('lbTabs');
-  if (tabsDiv) tabsDiv.innerHTML = '<div style="font-weight:700; color:#fff;">Loading global leaderboard...</div>';
-
-  // Fetch from GitHub Pages directly (timestamp added to bypass browser caching)
-  fetch('https://esquie96.github.io/7-wastes-bingo/leaderboard.csv?' + new Date().getTime())
-    .then(function(response) {
-      if (!response.ok) throw new Error("Leaderboard file not found");
-      return response.text();
-    })
-    .then(function(csvText) {
-      // Use existing CSV parser
-      lbData = parseCSV(csvText);
+ 
+  // Fetch the latest data from Google Sheets
+  fetch(CLOUD_URL)
+    .then(res => res.json())
+    .then(data => {
+      lbData = data; // Assign the cloud data to your leaderboard variable
       lbSort = 'overall';
-      renderLB();
+      renderLB();    // Re-render the table
     })
-    .catch(function(err) {
-      console.log(err);
-      toast('Could not load global leaderboard. Showing local records.', 'er');
-      // Fallback to local storage if the network request fails
+    .catch(err => {
+      console.error('Fetch error:', err);
+      // Fallback to local data if the cloud is blocked
       lbData = JSON.parse(localStorage.getItem('bingo_records') || '[]');
-      lbSort = 'overall';
       renderLB();
+      toast('⚠️ Showing local offline records.', 'er', 3000);
     });
 }
+
 function lbImport(){document.getElementById('lbCsvPicker').click()}
 function lbHandleFiles(files){if(!files||!files.length)return;var pending=files.length,imported=[];for(var i=0;i<files.length;i++){(function(file){var reader=new FileReader();reader.onload=function(e){var rows=parseCSV(e.target.result);imported=imported.concat(rows);pending--;if(pending<=0){var existing=JSON.parse(localStorage.getItem('bingo_records')||'[]');var all=existing.concat(imported);var seen={},deduped=[];all.forEach(function(r){var key=(r.name||'')+'|'+(r.empId||'')+'|'+(r.date||'')+'|'+(r.score||'')+'|'+(r.time||'');if(!seen[key]){seen[key]=true;deduped.push(r)}});localStorage.setItem('bingo_records',JSON.stringify(deduped));lbData=deduped;renderLB();toast('✅ Records imported','ok',2500)}};reader.readAsText(file,'utf-8')})(files[i])}document.getElementById('lbCsvPicker').value=''}
 function lbExport(){var recs=lbData&&lbData.length?lbData:[];if(!recs.length)return;var csv='\uFEFFNo.,Name,Employee ID,Date/Time,Source,Score,Bingo,Time,Wrong,Accuracy,Status\n';recs.forEach(function(r,i){csv+=(i+1)+',"'+r.name+'","'+(r.empId||'')+'","'+r.date+'","'+(r.source||'Office')+'",'+r.score+','+r.bingo+','+r.time+','+r.wrong+','+(r.accuracy||'-')+',"'+r.status+'"\n'});var blob=new Blob([csv],{type:'text/csv;charset=utf-8;'});var a=document.createElement('a');a.href=URL.createObjectURL(blob);a.download='Bingo_Leaderboard.csv';a.click()}
