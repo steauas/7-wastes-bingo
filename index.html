@@ -367,7 +367,7 @@
 </div>
 </div>
 
-<div id="lbScreen" class="screen"><div class="lb-box"><div class="lb-head"><div class="lb-title">🏆 Leaderboard</div><div class="lb-actions"><button class="abtn ref" onclick="lbImport()">📥 Import</button><button class="abtn exp" onclick="lbExport()">Export CSV</button><button class="abtn bk" onclick="goLogin()">Back</button></div></div><div class="lb-stats" id="lbStats"></div><div class="lb-tabs" id="lbTabs"></div><div class="lb-podium" id="lbPodium"></div><div class="lb-table-wrap lb-drop-zone" id="lbTableWrap"><div class="drop-ph">📂 Drop CSV files here to import</div></div></div><input type="file" id="lbCsvPicker" accept=".csv" multiple style="display:none" onchange="lbHandleFiles(this.files)"></div>
+<div id="lbScreen" class="screen"><div class="lb-box"><div class="lb-head"><div class="lb-title">🏆 Leaderboard</div><div class="lb-actions"><button class="abtn bk" onclick="goLogin()">Back</button></div></div><div class="lb-stats" id="lbStats"></div><div class="lb-tabs" id="lbTabs"></div><div class="lb-podium" id="lbPodium"></div><div class="lb-table-wrap lb-drop-zone" id="lbTableWrap"><div class="drop-ph">📂 Drop CSV files here to import</div></div></div><input type="file" id="lbCsvPicker" accept=".csv" multiple style="display:none" onchange="lbHandleFiles(this.files)"></div>
 
 <div class="mo" id="aModal"><div class="mb"><h3>🔒 Admin Login</h3><input type="password" id="aPwd" placeholder="Password" onkeydown="if(event.key==='Enter')cfmAdm()"><div class="mbs"><button class="cf" onclick="cfmAdm()">OK</button><button class="cc" onclick="clsModal()">Cancel</button></div></div></div>
 <div class="tc" id="tC"></div>
